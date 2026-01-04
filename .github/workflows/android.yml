@@ -3,7 +3,7 @@ name: Build Cloner APK
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
+  workflow_dispatch: # Allows manual trigger
 
 jobs:
   build:
@@ -21,20 +21,19 @@ jobs:
           distribution: 'zulu'
           cache: gradle
 
-      # FIX: This step auto-accepts the NDK and SDK licenses
-      - name: Accept Android Licenses
-        run: |
-          yes | sdkmanager --licenses
-          sdkmanager "ndk;25.2.9519653" # Optional: forces a stable NDK version
+      # This action automatically accepts all licenses (SDK & NDK)
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Grant Execute Permission
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew assembleDebug --stacktrace
+        # Using --no-daemon makes the build more stable on GitHub runners
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Cloner-v1
+          name: Cloner-v1-Debug
           path: app/build/outputs/apk/debug/app-debug.apk
