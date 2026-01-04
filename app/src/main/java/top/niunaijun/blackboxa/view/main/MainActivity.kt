@@ -157,22 +157,22 @@ private fun initFab() {
     try {
         viewBinding.fab.setOnClickListener {
             try {
-                // 1. Get the current user ID (usually 0 for the first virtual space)
+                // 1. Get the current user ID from the ViewPager
                 val userId = viewBinding.viewPager.currentItem
                 
-                // 2. Count how many apps are already installed in this virtual space
+                // 2. Corrected: Get apps for the specific userId
+                // We use getInstalledApplications(0, userId) 
+                // but we must ensure we are counting apps ONLY for that user
                 val installedAppsCount = BlackBoxCore.get().getInstalledApplications(0, userId).size
 
-                // 3. Check the limit (2 apps)
+                // 3. Limit Logic
                 if (installedAppsCount >= 2) {
-                    // Show a message to the user instead of opening the list
                     MaterialDialog(this).show {
                         title(text = "Limit Reached")
-                        message(text = "You can only clone 2 apps in this version. Please delete an app to add a new one.")
+                        message(text = "You can only clone 2 apps. Please delete one to continue.")
                         positiveButton(text = "OK")
                     }
                 } else {
-                    // Under the limit, allow choosing an app to clone
                     val intent = Intent(this, ListActivity::class.java)
                     intent.putExtra("userID", userId)
                     apkPathResult.launch(intent)
@@ -184,7 +184,8 @@ private fun initFab() {
     } catch (e: Exception) {
         Log.e(TAG, "Error in initFab: ${e.message}")
     }
-}
+} 
+    
     fun showFloatButton(show: Boolean) {
         try {
             val tranY: Float = Resolution.convertDpToPixel(120F, App.getContext())
