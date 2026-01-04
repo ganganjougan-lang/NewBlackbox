@@ -4,46 +4,52 @@ plugins {
 }
 
 android {
+    // This must match your project structure
+    namespace 'top.niunaijun.blackboxa' 
+    compileSdk 34 // Manually set if rootProject.ext fails
 
-    namespace 'top.niunaijun.blackboxa'
-    compileSdk rootProject.ext.compileSdkVersion
-    ndkVersion = "29.0.13846066"
+    // FIX: Changed to a standard stable NDK version supported by GitHub runners
+    ndkVersion "25.2.9519653" 
+
     defaultConfig {
-        applicationId "top.niunaijun.blackboxa"
-        minSdk rootProject.ext.minSdk
-        targetSdk rootProject.ext.targetSdkVersion
-        versionCode rootProject.ext.versionCode
-        versionName rootProject.ext.versionName
+        applicationId "com.xero.mainhax" // Updated to match your Manifest
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
 
-        splits {
-            abi {
-                enable true
-                reset()
-                //noinspection ChromeOsAbiSupport
-                include 'armeabi-v7a', "arm64-v8a"
-                universalApk true
-            }
+    // FIX: Corrected the nesting of the splits block
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a'
+            universalApk true
         }
     }
 
     buildTypes {
         release {
             signingConfig signingConfigs.debug
-            minifyEnabled true
+            minifyEnabled false // Set to false first to ensure build works
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    buildFeatures {
-        viewBinding true
-    }
+
     kotlinOptions {
         jvmTarget = '17'
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 }
 
@@ -51,38 +57,34 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
     implementation project(':Bcore')
 
+    // Standard libraries from your libs.versions.toml
     implementation libs.appcompat
     implementation libs.material
     implementation libs.constraintlayout
     implementation libs.core.ktx
+    
+    // Lifecycle & UI
+    implementation "androidx.preference:preference-ktx:1.2.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
+    implementation 'androidx.recyclerview:recyclerview:1.3.0'
+
+    // UI Components
+    implementation 'com.tbuonomo:dotsindicator:4.3'
+    implementation 'com.afollestad.material-dialogs:core:3.3.0'
+    implementation 'com.afollestad.material-dialogs:input:3.3.0'
+    
+    // Search & Map
+    implementation 'com.github.Ferfalk:SimpleSearchView:0.2.0'
+    implementation 'org.osmdroid:osmdroid-android:6.1.11'
+    
+    // Other Utilities
+    implementation 'com.github.Othershe:CornerLabelView:1.0.0'
+    implementation 'com.github.nukc.stateview:kotlin:2.2.0'
+    implementation 'com.gitee.cbfg5210:RVAdapter:0.3.7'
+
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
-
-    implementation "androidx.preference:preference-ktx:1.1.1"
-    //viewModel liveData  lifecycle
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
-
-    //列表
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'com.gitee.cbfg5210:RVAdapter:0.3.7'
-
-    //searchView
-    implementation 'com.github.Othershe:CornerLabelView:1.0.0'
-    //dialog
-    implementation 'com.github.nukc.stateview:kotlin:2.2.0'
-    //加载dialog
-    implementation 'com.github.Ferfalk:SimpleSearchView:0.2.0'
-    implementation 'com.tbuonomo:dotsindicator:4.2'
-    // osmdroid
-    implementation 'org.osmdroid:osmdroid-android:6.1.11'
-    //viewPager2 指示点
-    implementation 'com.afollestad.material-dialogs:core:3.3.0'
-    implementation 'com.afollestad.material-dialogs:input:3.3.0'
-
-
-
-
 }
