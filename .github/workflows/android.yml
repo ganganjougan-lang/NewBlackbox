@@ -2,10 +2,8 @@ name: Build Cloner APK
 
 on:
   push:
-    branches: [ main ] # Runs when you save changes to the main branch
-  pull_request:
     branches: [ main ]
-  workflow_dispatch:   # This allows you to click a button to build manually
+  workflow_dispatch:
 
 jobs:
   build:
@@ -20,19 +18,23 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'zulu' # Optimized for Android builds
+          distribution: 'zulu'
           cache: gradle
+
+      # FIX: This step auto-accepts the NDK and SDK licenses
+      - name: Accept Android Licenses
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "ndk;25.2.9519653" # Optional: forces a stable NDK version
 
       - name: Grant Execute Permission
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        # We use assembleDebug so you don't need to deal with signing keys yet
         run: ./gradlew assembleDebug --stacktrace
 
       - name: Upload Artifact
-        # This saves the APK so you can download it
         uses: actions/upload-artifact@v4
         with:
-          name: Cloner-Version-v1
+          name: Cloner-v1
           path: app/build/outputs/apk/debug/app-debug.apk
